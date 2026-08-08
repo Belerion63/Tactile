@@ -1,7 +1,8 @@
 # Tactile — vitrine
 
-Site vitrine de la **suite Tactile**, une série de mods Minecraft qui remplacent les
-interfaces par des interactions physiques et gestuelles dans le monde.
+Site vitrine de la **suite Tactile**, une série de mods Minecraft qui refont le
+monde en profondeur : le minerai, les arbres, le climat, la faune. Le geste en
+est la note finale.
 
 Le site est un ensemble de pages HTML statiques, sans build ni dépendance :
 il est servi tel quel par GitHub Pages.
