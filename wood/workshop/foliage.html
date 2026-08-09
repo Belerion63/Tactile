@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="../../assets/favicon.png">
+<meta name="description" content="Everything needed to sculpt a species and share it. Each section stands alone, read them in any order.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tactile">
+<meta property="og:title" content="Foliage, Tactile:Wood">
+<meta property="og:description" content="Everything needed to sculpt a species and share it. Each section stands alone, read them in any order.">
+<meta property="og:image" content="https://belerion63.github.io/Tactile/assets/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<title data-fr="Le feuillage, Tactile:Wood" data-en="Foliage, Tactile:Wood">Foliage, Tactile:Wood</title>
+<style>
+:root{--paper:#f2f1ec;--paper2:#ebe8e1;--card:#fff;--ink:#191510;--ink2:#5f594e;--line:#dcd7cd;--accent:#c07f1e;--c:#4f9e3a}
+*{box-sizing:border-box}html{background:var(--paper)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1240px;margin:0 auto;padding:0 32px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 32px;max-width:1240px;margin:0 auto}
+.back{display:flex;align-items:center;gap:11px;color:var(--ink2);font-size:14px}.back svg{width:20px;height:24px}.back:hover{color:var(--ink)}
+.top .r{display:flex;gap:10px;align-items:center}
+.top .r a{font-size:13px;color:var(--ink2);border:1px solid var(--line);border-radius:2px;padding:8px 15px}
+.top .r a:hover{border-color:var(--ink);color:var(--ink)}
+.top .r a.pri{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.langsw{display:inline-flex;border:1px solid var(--line);border-radius:2px;overflow:hidden}
+.langsw .lang{background:var(--card);border:none;color:var(--ink2);font-size:12px;font-weight:700;letter-spacing:.06em;padding:8px 11px;cursor:pointer}
+.langsw .lang.on{background:var(--ink);color:var(--paper)}
+
+.gh{background:var(--paper2);border-bottom:1px solid var(--line);border-top:3px solid var(--c)}
+.gh .wrap{padding:48px 32px 42px;max-width:900px}
+.gh .crumb{font-size:13px;color:var(--ink2)}
+.gh .crumb a:hover{color:var(--ink)}
+.gh .mod{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:#fff;background:var(--c);padding:4px 10px;border-radius:2px}
+.gh h1{margin:14px 0 0;font-size:clamp(28px,4vw,42px);font-weight:700;letter-spacing:-.015em}
+.gh p{margin:14px 0 0;font-size:17.5px;line-height:1.72;color:var(--ink2);max-width:60ch}
+
+.doc{max-width:900px;margin:0 auto;padding:0 32px 60px}
+.chs{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;padding:34px 0 8px}
+.ch{display:block;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:4px;padding:16px 18px}
+.ch:hover{border-color:var(--ink);border-left-color:var(--c)}
+.ch b{display:block;font-size:16px;font-weight:700;letter-spacing:-.01em}
+.ch span{display:block;margin-top:6px;font-size:14px;line-height:1.55;color:var(--ink2)}
+
+.body p{margin:22px 0 0;font-size:17px;line-height:1.78;color:#3f3a31;max-width:66ch}
+.body img{display:block;width:100%;height:auto;margin:28px 0 0;border:1px solid rgba(25,18,10,.10);border-radius:6px;box-shadow:0 14px 30px rgba(25,18,10,.15)}
+.body{padding-top:34px}
+
+.todo{margin:26px 0 0;padding:18px 20px;border:1px dashed var(--line);border-radius:4px;background:var(--card)}
+.todo b{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.todo span{font-size:15px;color:var(--ink2)}
+
+.nav{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:52px;padding-top:26px;border-top:1px solid var(--line)}
+.nav a{max-width:46%;font-size:14.5px;color:var(--ink2);border:1px solid var(--line);border-radius:3px;padding:12px 16px;background:var(--card)}
+.nav a:hover{border-color:var(--ink);color:var(--ink)}
+.nav a i{display:block;font-style:normal;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);margin-bottom:3px}
+.nav a.next{margin-left:auto;text-align:right}
+
+.end{background:var(--paper2);border-top:1px solid var(--line)}
+.end .wrap{padding:46px 32px;max-width:900px;text-align:center}
+.end h2{margin:0 0 12px;font-size:24px;font-weight:700}
+.end p{margin:0 0 20px;font-size:16.5px;color:var(--ink2)}
+.end a{display:inline-block;background:var(--ink);color:var(--paper);font-weight:700;font-size:15px;padding:13px 26px;border-radius:2px}
+.end a:hover{background:var(--accent)}
+
+footer{border-top:1px solid var(--line);padding:34px 0;font-size:13px;color:var(--ink2)}
+footer .row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+footer .links{display:flex;gap:10px;flex-wrap:wrap}
+footer .links a{border:1px solid var(--line);border-radius:2px;padding:8px 15px}
+footer .links a:hover{border-color:var(--ink);color:var(--ink)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs><g id="emb"><g fill="none" stroke="#191510" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"><line x1="-46" y1="-52" x2="46" y2="-52"/><line x1="0" y1="-52" x2="0" y2="58"/></g><g fill="#191510"><circle cx="-46" cy="-52" r="9.5"/><circle cx="46" cy="-52" r="9.5"/><circle cx="0" cy="58" r="9.5"/></g><circle cx="0" cy="-52" r="12" fill="none" stroke="#c07f1e" stroke-width="7"/><circle cx="0" cy="-52" r="5" fill="#c07f1e"/></g></defs></svg>
+<div class="top"><a class="back" href="index.html"><svg viewBox="-64 -72 128 144"><use href="#emb"/></svg><span data-fr="Retour au sommaire" data-en="Back to contents">Back to contents</span></a><div class="r"><span class="langsw"><button class="lang on" data-lang="fr">FR</button><button class="lang" data-lang="en">EN</button></span><a href="https://discord.gg/WPdhCW4JdU" target="_blank" rel="noopener">Discord</a><a href="https://ko-fi.com/belerion" target="_blank" rel="noopener">Ko-fi</a><a class="pri" href="https://www.curseforge.com/members/belerion/projects" target="_blank" rel="noopener">CurseForge</a></div></div><section class="gh"><div class="wrap"><p class="crumb"><a href="../index.html">Tactile:Wood</a> · <a href="index.html" data-fr="L'atelier d'espèces" data-en="The species workshop">The species workshop</a></p><h1 data-fr="Le feuillage" data-en="Foliage">Foliage</h1><p data-fr="La masse, sa densité, ses creux, ses ombres." data-en="The mass, its density, its hollows, its shadows.">The mass, its density, its hollows, its shadows.</p></div></section><div class="doc"><div class="body"><div class="todo"><b data-fr="À écrire" data-en="To be written">To be written</b><span data-fr="Ce module sera rédigé quand l'atelier sera figé." data-en="This section will be written once the workshop is settled.">This section will be written once the workshop is settled.</span></div><img src="../img/g2.jpg" alt=""></div><nav class="nav"><a class="prev" href="shape.html"><i data-fr="Module précédent" data-en="Previous section">Previous section</i><span data-fr="La forme" data-en="Shape">Shape</span></a><a class="next" href="texture.html"><i data-fr="Module suivant" data-en="Next section">Next section</i><span data-fr="La texture" data-en="Texture">Texture</span></a></nav></div><section class="end"><div class="wrap"><h2 data-fr="Une question, un blocage ?" data-en="A question, a wall?">A question, a wall?</h2><p data-fr="Le salon d'entraide est là pour ça, et les créations des autres sont souvent la meilleure réponse." data-en="The help channel is there for that, and other people's creations are often the best answer.">The help channel is there for that, and other people's creations are often the best answer.</p><a href="https://discord.gg/WPdhCW4JdU" target="_blank" rel="noopener" data-fr="Rejoindre le Discord" data-en="Join the Discord">Join the Discord</a></div></section><footer><div class="wrap"><div class="row"><span data-fr="Tactile · suite de mods Minecraft" data-en="Tactile · a Minecraft mod suite">Tactile · a Minecraft mod suite</span><div class="links"><a href="https://github.com/Belerion63/Tactile/blob/main/LICENSE" target="_blank" rel="noopener" data-fr="© 2026 belerion · Tous droits réservés" data-en="© 2026 belerion · All rights reserved">© 2026 belerion · All rights reserved</a><a href="https://github.com/Belerion63/Tactile" target="_blank" rel="noopener">GitHub</a></div></div></div></footer><script>(function(){function set(l){document.querySelectorAll('[data-fr]').forEach(function(e){var v=e.getAttribute('data-'+l);if(v!==null)e.textContent=v;});document.documentElement.setAttribute('lang',l);try{localStorage.setItem('tactile_lang',l);}catch(e){}document.querySelectorAll('.lang').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-lang')===l);});}var s='en';try{s=localStorage.getItem('tactile_lang')||'en';}catch(e){}document.querySelectorAll('.lang').forEach(function(b){b.addEventListener('click',function(){set(b.getAttribute('data-lang'));});});set(s);})();</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "_": "L'adresse du guichet des créations, lue par le mod à chaque envoi. Passer enabled à false coupe le partage pour TOUTES les versions déjà installées, sans republier de jar. Voir service/README.md.",
+  "enabled": true,
+  "url": "https://tactile-addons.tactile-suite.workers.dev"
+}
