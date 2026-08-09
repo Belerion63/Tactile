@@ -4,7 +4,15 @@
 Une seule page pour tous les modules, filtrée côté client. Le bouton d'une page
 de module y mène en pré-filtrant : addons/?module=wood
 
-Les données viennent de website/addons/addons.json. Vide = état d'invitation.
+Les données viennent du GUICHET, demandées au chargement de la page — pas
+inscrites ici à la génération. C'est ce qui permet qu'une création approuvée
+paraisse dans la seconde, sans régénérer ni republier le site. Vide = état
+d'invitation.
+
+L'adresse du guichet est lue dans addons/service.json, le même fichier que le
+mod consulte pour envoyer : une seule adresse à changer le jour d'un
+déménagement.
+
 DEMO=1 fabrique un aperçu avec des entrées d'exemple, SANS toucher au site.
 """
 import io, json, os, re, sys
@@ -32,35 +40,21 @@ EMB = ('<g fill="none" stroke="#191510" stroke-width="8" stroke-linecap="round" 
        '<circle cx="0" cy="-52" r="12" fill="none" stroke="#c07f1e" stroke-width="7"/>'
        '<circle cx="0" cy="-52" r="5" fill="#c07f1e"/>')
 
-def counts():
-    """Nombre de téléchargements par fichier, lu sur les Releases GitHub À LA GÉNÉRATION.
+def data_url():
+    """Où la page ira chercher les créations.
 
-    Aucune dépendance à l'exécution : les chiffres sont inscrits dans la page. Ils
-    datent donc de la dernière régénération, ce qui est sans importance à ce rythme.
-    En cas de réseau absent ou d'API muette, on renvoie un dictionnaire vide et la
-    page se passe simplement du compteur."""
-    try:
-        import urllib.request
-        url = "https://api.github.com/repos/Belerion63/Tactile/releases"
-        req = urllib.request.Request(url, headers={"User-Agent": "tactile-site"})
-        with urllib.request.urlopen(req, timeout=8) as r:
-            rel = json.loads(r.read().decode())
-        out = {}
-        for rl in rel:
-            for a in rl.get("assets", []):
-                out[a["name"]] = a.get("download_count", 0)
-        return out
-    except Exception:
-        return {}
-
-
-def load():
-    p = f"{SITE}/addons/addons.json"
+    En aperçu, un fichier d'exemple posé à côté : on met la galerie en scène sans
+    dépendre du service ni salir ses données. En vrai, le guichet."""
     if DEMO:
-        return json.loads(io.open(f"{PREV}/addons_demo.json", encoding="utf-8").read())
+        return "addons_demo.json"
+    p = f"{SITE}/addons/service.json"
     if not os.path.exists(p):
-        return []
-    return json.loads(io.open(p, encoding="utf-8").read())
+        sys.exit("addons/service.json est introuvable : impossible de savoir où sont les créations.")
+    conf = json.loads(io.open(p, encoding="utf-8").read())
+    url = (conf.get("url") or "").rstrip("/")
+    if not url:
+        sys.exit("addons/service.json ne contient pas d'adresse de service.")
+    return url + "/addons.json"
 
 CSS = r"""
 :root{--paper:#f2f1ec;--paper2:#ebe8e1;--card:#fff;--ink:#191510;--ink2:#5f594e;--line:#dcd7cd;--accent:#c07f1e}
@@ -139,49 +133,11 @@ footer .links a{border:1px solid var(--line);border-radius:2px;padding:8px 15px}
 footer .links a:hover{border-color:var(--ink);color:var(--ink)}
 """
 
-def esc(s): return (s or "").replace('"', "&quot;")
-
-def card(a):
-    col = dict((m[0], m[2]) for m in MODULES).get(a["module"], "#888")
-    name = dict((m[0], m[1]) for m in MODULES).get(a["module"], a["module"])
-    imgs = a.get("images") or []
-    shots = "".join(f'<img src="{im}" alt="" class="{"on" if i==0 else ""}" loading="lazy">'
-                    for i, im in enumerate(imgs))
-    dots = "".join(f'<i class="{"on" if i==0 else ""}"></i>' for i in range(len(imgs))) if len(imgs) > 1 else ""
-    nav = ('<button class="nav prev" aria-label="prev">&#8249;</button>'
-           '<button class="nav next" aria-label="next">&#8250;</button>') if len(imgs) > 1 else ""
-    bits = []
-    if a.get("species"): bits.append(f'<span>{a["species"]} <span data-fr="espèces" data-en="species">species</span></span>')
-    if a.get("models"):  bits.append(f'<span>{a["models"]} <span data-fr="modèles" data-en="models">models</span></span>')
-    if a.get("leaves"):  bits.append(f'<span>{a["leaves"]} <span data-fr="feuillages" data-en="foliages">foliages</span></span>')
-    for r in a.get("requires", []):
-        bits.append(f'<span>+ {r}</span>')
-    search = " ".join(str(a.get(k, "")) for k in ("name", "author", "description")).lower()
-    return (f'<article class="card" style="--c:{col}" data-module="{a["module"]}" data-name="{esc(a["name"]).lower()}" '
-            f'data-search="{esc(search)}" data-date="{a.get("updated","")}" data-dl="{a.get("downloads",0)}">'
-            f'<div class="shot">{shots}<span class="mod">{name}</span>{nav}<div class="dots">{dots}</div></div>'
-            f'<div class="body"><h2>{a["name"]}</h2>'
-            f'<p class="by"><span data-fr="par" data-en="by">by</span> {a["author"]}</p>'
-            f'<p class="desc">{a.get("description","")}</p>'
-            f'<div class="meta">{"".join(bits)}</div>'
-            f'<div class="foot"><a class="dl" href="{a["download"]}"{X} '
-            f'data-fr="Télécharger" data-en="Download">Download</a>'
-            f'<span class="ver">v{a.get("version",1)} · {a.get("updated","")}</span>'
-            + (f'<span class="dls">{a["downloads"]} <span data-fr="téléchargements" data-en="downloads">downloads</span></span>'
-               if a.get("downloads") is not None else "")
-            + '</div>'
-            f'</div></article>')
-
 def build():
-    data = load()
-    dl = counts()
-    for a in data:
-        if "downloads" not in a:
-            n = (a.get("download") or "").rsplit("/", 1)[-1]
-            if n in dl:
-                a["downloads"] = dl[n]
     opts = "".join(f'<option value="{m[0]}">{m[1]}</option>' for m in MODULES)
-    cards = "\n".join(card(a) for a in data)
+    mods = {m[0]: {"name": m[1], "col": m[2]} for m in MODULES}
+    script = (SCRIPT.replace("__DATA_URL__", data_url())
+                    .replace("__MODULES__", json.dumps(mods, ensure_ascii=False)))
 
     empty = (f'<div class="empty" id="empty"><svg viewBox="-75 -75 150 150">{EMB}</svg>'
              f'<h2 data-fr="Rien encore, et c\'est une invitation" data-en="Nothing yet, and that is an invitation">'
@@ -221,7 +177,7 @@ def build():
     <select id="sort"><option value="date" data-fr="Plus récentes" data-en="Most recent">Most recent</option><option value="dl" data-fr="Plus téléchargées" data-en="Most downloaded">Most downloaded</option><option value="name" data-fr="Alphabétique" data-en="Alphabetical">Alphabetical</option></select>
     <span class="count" id="count"></span>
   </div>
-  <div class="grid" id="grid">{cards}</div>
+  <div class="grid" id="grid"></div>
   {empty}
 </div>
 
@@ -231,13 +187,26 @@ def build():
 <span data-fr="Tactile · suite de mods Minecraft" data-en="Tactile · a Minecraft mod suite">Tactile · a Minecraft mod suite</span>
 <div class="links"><a href="{LIC}"{X} data-fr="© 2026 belerion · Tous droits réservés" data-en="© 2026 belerion · All rights reserved">© 2026 belerion · All rights reserved</a><a href="{GITHUB}"{X}>GitHub</a></div>
 </div></div></footer>
-{SCRIPT}"""
+{script}"""
     return body
 
 SCRIPT = """<script>
 (function(){
+  var DATA='__DATA_URL__';
+  var MODS=__MODULES__;
+  // Les chemins rendus par le guichet sont relatifs À LUI (/download/12), pas au site : on les ramène à son adresse.
+  var BASE=DATA.replace(/[^/]*$/,'');
+  function abs(u){ if(!u) return ''; if(/^https?:/.test(u)) return u; return BASE+String(u).replace(/^\\//,''); }
+
+  // TOUT CE QUI VIENT DU GUICHET EST ÉCHAPPÉ. Ces textes sont écrits par des joueurs : les poser tels quels dans la
+  // page reviendrait à leur laisser exécuter ce qu'ils veulent chez tous les visiteurs.
+  var ENT={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return ENT[c];}); }
+
   // ---- langue, partagée avec le reste du site
+  var cur='en';
   function set(l){
+    cur=l;
     document.querySelectorAll('[data-fr]').forEach(function(e){var v=e.getAttribute('data-'+l);if(v!==null)e.textContent=v;});
     document.querySelectorAll('[data-ph-fr]').forEach(function(e){e.placeholder=e.getAttribute('data-ph-'+l);});
     document.documentElement.setAttribute('lang',l);
@@ -248,8 +217,48 @@ SCRIPT = """<script>
   document.querySelectorAll('.lang').forEach(function(b){b.addEventListener('click',function(){set(b.getAttribute('data-lang'));});});
   set(s);
 
-  // ---- diaporama de chaque carte
-  document.querySelectorAll('.shot').forEach(function(sh){
+  var grid=document.getElementById('grid'), q=document.getElementById('q'),
+      mod=document.getElementById('mod'), sort=document.getElementById('sort'),
+      count=document.getElementById('count'), empty=document.getElementById('empty');
+  var all=[];
+  empty.style.display='none';
+
+  // ---- une carte
+  function card(a){
+    var m=MODS[a.module]||{name:a.module||'?',col:'#888'};
+    var imgs=(a.images||[]).map(abs);
+    var shots=imgs.map(function(u,i){return '<img src="'+esc(u)+'" alt="" class="'+(i?'':'on')+'" loading="lazy">';}).join('');
+    var dots=imgs.length>1?imgs.map(function(_,i){return '<i class="'+(i?'':'on')+'"></i>';}).join(''):'';
+    var nav=imgs.length>1?'<button class="nav prev" aria-label="prev">&#8249;</button><button class="nav next" aria-label="next">&#8250;</button>':'';
+    var bits=[];
+    if(a.species) bits.push('<span>'+(+a.species)+' <span data-fr="espèces" data-en="species">species</span></span>');
+    if(a.models)  bits.push('<span>'+(+a.models)+' <span data-fr="modèles" data-en="models">models</span></span>');
+    if(a.leaves)  bits.push('<span>'+(+a.leaves)+' <span data-fr="feuillages" data-en="foliages">foliages</span></span>');
+    (a.requires||[]).forEach(function(r){ bits.push('<span>+ '+esc(r)+'</span>'); });
+
+    var el=document.createElement('article');
+    el.className='card';
+    el.style.setProperty('--c',m.col);
+    el.dataset.module=a.module||'';
+    el.dataset.name=String(a.name||'').toLowerCase();
+    el.dataset.search=[a.name,a.author,a.description].join(' ').toLowerCase();
+    el.dataset.date=a.updated||'';
+    el.dataset.dl=+a.downloads||0;
+    el.innerHTML='<div class="shot">'+shots+'<span class="mod">'+esc(m.name)+'</span>'+nav+'<div class="dots">'+dots+'</div></div>'
+      +'<div class="body"><h2>'+esc(a.name)+'</h2>'
+      +'<p class="by"><span data-fr="par" data-en="by">by</span> '+esc(a.author)+'</p>'
+      +'<p class="desc">'+esc(a.description)+'</p>'
+      +'<div class="meta">'+bits.join('')+'</div>'
+      +'<div class="foot"><a class="dl" href="'+esc(abs(a.download))+'" target="_blank" rel="noopener" '
+      +'data-fr="Télécharger" data-en="Download">Download</a>'
+      +'<span class="ver">v'+(+a.version||1)+' · '+esc(a.updated)+'</span>'
+      +'<span class="dls">'+(+a.downloads||0)+' <span data-fr="téléchargements" data-en="downloads">downloads</span></span>'
+      +'</div></div>';
+    return el;
+  }
+
+  // ---- diaporama d'une carte
+  function slides(sh){
     var imgs=sh.querySelectorAll('img'), dots=sh.querySelectorAll('.dots i'), i=0;
     if(!imgs.length) return;
     function go(n){ imgs[i].classList.remove('on'); if(dots[i])dots[i].classList.remove('on');
@@ -259,16 +268,11 @@ SCRIPT = """<script>
     if(n) n.addEventListener('click',function(e){e.preventDefault();go(i+1);});
     sh.addEventListener('click',function(e){ if(e.target.classList.contains('nav'))return;
       var lb=document.getElementById('lb'); lb.querySelector('img').src=imgs[i].src; lb.classList.add('on'); });
-  });
+  }
   var lb=document.getElementById('lb');
   lb.addEventListener('click',function(){lb.classList.remove('on');});
 
   // ---- filtre, recherche, tri
-  var grid=document.getElementById('grid'), q=document.getElementById('q'),
-      mod=document.getElementById('mod'), sort=document.getElementById('sort'),
-      count=document.getElementById('count'), empty=document.getElementById('empty');
-  var all=[].slice.call(grid.children);
-
   var params=new URLSearchParams(location.search);
   if(params.get('module')) mod.value=params.get('module');
 
@@ -284,11 +288,35 @@ SCRIPT = """<script>
       return (b.dataset.date||'').localeCompare(a.dataset.date||''); });
     arr.forEach(function(c){grid.appendChild(c);});
     count.textContent=shown+' / '+all.length;
-    if(all.length===0){ count.textContent=''; }
-    else { empty.style.display=shown?'none':'block'; }
+    empty.style.display=shown?'none':'block';
   }
-  if(all.length===0){ grid.style.display='none'; document.querySelector('.bar').style.display='none'; }
-  else { empty.style.display='none'; [q,mod,sort].forEach(function(e){e.addEventListener('input',apply);}); apply(); }
+
+  function nothing(fr,en,pfr,pen){
+    grid.style.display='none';
+    document.querySelector('.bar').style.display='none';
+    empty.style.display='block';
+    if(fr){
+      var h=empty.querySelector('h2'); h.setAttribute('data-fr',fr); h.setAttribute('data-en',en);
+      var p=empty.querySelector('p'); p.setAttribute('data-fr',pfr); p.setAttribute('data-en',pen);
+    }
+    set(cur);
+  }
+
+  fetch(DATA,{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(list){
+    if(!list||!list.length){ nothing(); return; }
+    all=list.map(card);
+    all.forEach(function(c){ grid.appendChild(c); slides(c.querySelector('.shot')); });
+    // LES CARTES VIENNENT D'APPARAÎTRE : elles n'existaient pas quand la langue a été posée.
+    set(cur);
+    [q,mod,sort].forEach(function(e){e.addEventListener('input',apply);});
+    apply();
+  }).catch(function(){
+    // ON NE DIT PAS « RIEN ENCORE » QUAND ON NE SAIT PAS. Une panne affichée comme une galerie vide ferait croire
+    // que personne n'a jamais rien partagé.
+    nothing('Les créations ne se chargent pas','Creations are not loading',
+      'Le service est momentanément injoignable. Réessayez dans un moment.',
+      'The service is briefly unreachable. Please try again in a moment.');
+  });
 })();
 </script>"""
 
@@ -316,8 +344,5 @@ if DEMO:
     print("aperçu DEMO :", len(html)//1024, "Ko")
 else:
     os.makedirs(f"{SITE}/addons", exist_ok=True)
-    p = f"{SITE}/addons/addons.json"
-    if not os.path.exists(p):
-        io.open(p, "w", encoding="utf-8").write("[]\n")
     io.open(f"{SITE}/addons/index.html", "w", encoding="utf-8").write(html)
-    print("website/addons/index.html :", len(html)//1024, "Ko,", len(load()), "création(s)")
+    print("website/addons/index.html :", len(html)//1024, "Ko — les créations sont demandées au guichet :", data_url())
