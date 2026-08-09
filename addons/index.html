@@ -55,7 +55,7 @@ a{color:inherit;text-decoration:none}
 .shot .nav{position:absolute;top:50%;transform:translateY(-50%);width:30px;height:44px;border:none;background:rgba(0,0,0,.34);color:#fff;font-size:17px;cursor:pointer;opacity:0;transition:opacity .2s}
 .shot:hover .nav{opacity:1}
 .shot .prev{left:0}.shot .next{right:0}
-.dots{position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:6px}
+.dots{position:absolute;bottom:8px;left:0;right:0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;padding:0 10px}
 .dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.45)}
 .dots i.on{background:#fff}
 .mod{position:absolute;top:10px;left:10px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#fff;background:var(--c,#666);padding:4px 9px;border-radius:2px}
@@ -204,6 +204,15 @@ footer .links a:hover{border-color:var(--ink);color:var(--ink)}
     if(n) n.addEventListener('click',function(e){e.preventDefault();go(i+1);});
     sh.addEventListener('click',function(e){ if(e.target.classList.contains('nav'))return;
       var lb=document.getElementById('lb'); lb.querySelector('img').src=imgs[i].src; lb.classList.add('on'); });
+
+    // ÇA DÉFILE TOUT SEUL : un pack est une collection, et personne ne cliquera vingt fois pour la voir. Les flèches
+    // restent, pour qui veut revenir en arrière.
+    if(imgs.length<2) return;
+    var timer=setInterval(function(){go(i+1);},4000);
+    // SURVOLER, C'EST REGARDER. Continuer de faire tourner l'image sous les yeux de quelqu'un qui s'est arrêté dessus
+    // est la meilleure façon de lui faire rater ce qu'il voulait voir.
+    sh.addEventListener('mouseenter',function(){clearInterval(timer);timer=null;});
+    sh.addEventListener('mouseleave',function(){if(!timer)timer=setInterval(function(){go(i+1);},4000);});
   }
   var lb=document.getElementById('lb');
   lb.addEventListener('click',function(){lb.classList.remove('on');});
