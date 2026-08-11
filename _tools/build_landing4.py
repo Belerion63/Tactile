@@ -204,7 +204,7 @@ TEMPLATE = """<title data-fr="Tactile, la vitrine" data-en="Tactile, the showcas
   <div class="bg"></div><div class="scrim"></div>
   <div class="in">
     <h1 class="wordmark"><svg class="lettert" viewBox="-64 -72 128 144">@@EMBLEM@@</svg><span>actile</span></h1>
-    <p data-fr="Un monde transformé en profondeur. Le geste en est la note finale." data-en="A world transformed in depth. The gesture is its final note.">Un monde transformé en profondeur. Le geste en est la note finale.</p>
+    <p data-fr="Votre monde ne sera plus jamais le même." data-en="Your world will never be the same.">Votre monde ne sera plus jamais le même.</p>
     <a class="bcta" href="addons/index.html" data-fr="Créations de la communauté" data-en="Community creations">Créations de la communauté</a>
   </div>
   <div class="wm"><svg viewBox="-64 -72 128 144">@@EMBLEM@@</svg><b>Tactile</b></div>
@@ -294,11 +294,12 @@ idx = html_site.index("</style>")+len("</style>")
 head, body = html_site[:idx], html_site[idx:]
 standalone=('<!DOCTYPE html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n'
  '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
- '<meta name="description" content="Le minerai, les arbres, le climat, la faune : une suite de mods qui refond le monde de Minecraft en profondeur, jusqu\'au geste.">\n'
+ # Anglais : le site est en anglais par défaut, ces champs ne passent pas par en_first().
+ '<meta name="description" content="Ore, trees, climate, wildlife: a suite of Minecraft mods that reworks the world in depth, down to the gesture.">\n'
  # Carte de partage : ce que Discord, Reddit ou Twitter affichent quand on colle le lien.
  '<meta property="og:type" content="website">\n'
  '<meta property="og:site_name" content="Tactile">\n'
- '<meta property="og:title" content="Tactile, suite de mods Minecraft">\n'
+ '<meta property="og:title" content="Tactile, a Minecraft mod suite">\n'
  '<meta property="og:description" content="Ore, trees, climate, wildlife: a suite of Minecraft mods that reworks the world in depth, down to the gesture.">\n'
  f'<meta property="og:url" content="{BASE}/">\n'
  f'<meta property="og:image" content="{BASE}/assets/og.jpg">\n'

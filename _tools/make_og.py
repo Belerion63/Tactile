@@ -43,9 +43,9 @@ body{{width:1200px;height:630px;overflow:hidden;
   <div class="bg"></div><div class="scrim"></div>
   <div class="in">
     <h1 class="wordmark"><svg class="lettert" viewBox="-64 -72 128 144">{EMB}</svg><span>actile</span></h1>
-    <p class="tag">Un monde transformé en profondeur. Le geste en est la note finale.</p>
+    <p class="tag">Your world will never be the same.</p>
   </div>
-  <div class="foot"><span><b>3</b> mods jouables ou imminents</span><span><b>12</b> modules pensés</span></div>
+  <div class="foot"><span><b>3</b> mods out or coming</span><span><b>13</b> modules planned</span></div>
 </div></body></html>"""
 
 src = f"{TMP}/og_card.html"
