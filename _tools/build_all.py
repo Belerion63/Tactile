@@ -50,7 +50,7 @@ def make(m,key,src,w,h,cb=0.0,ct=0.0,q=80):
     b=io.BytesIO(); im.save(b,"JPEG",quality=q); URI[key]="data:image/jpeg;base64,"+base64.b64encode(b.getvalue()).decode()
 
 BASE="https://belerion63.github.io/Tactile"
-DISCORD="https://discord.gg/WPdhCW4JdU"
+DISCORD="https://discord.com/invite/WPdhCW4JdU"
 CURSEFORGE="https://www.curseforge.com/members/belerion/projects"
 KOFI="https://ko-fi.com/belerion"
 GITHUB="https://github.com/Belerion63/Tactile"

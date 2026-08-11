@@ -86,7 +86,7 @@ visionwall="\n".join(vt(m) for m in VISION)
 pisteswall="\n".join(vt(m,piste=True) for m in PISTES)
 
 BASE="https://belerion63.github.io/Tactile"
-DISCORD="https://discord.gg/WPdhCW4JdU"
+DISCORD="https://discord.com/invite/WPdhCW4JdU"
 CURSEFORGE="https://www.curseforge.com/members/belerion/projects"
 KOFI="https://ko-fi.com/belerion"
 GITHUB="https://github.com/Belerion63/Tactile"

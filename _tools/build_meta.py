@@ -11,7 +11,7 @@ import io, os, re, time
 
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE = "https://belerion63.github.io/Tactile"
-DISCORD = "https://discord.gg/WPdhCW4JdU"
+DISCORD = "https://discord.com/invite/WPdhCW4JdU"
 CURSEFORGE = "https://www.curseforge.com/members/belerion/projects"
 
 # Les robots d'entraînement des IA. Les autoriser, c'est accepter que ton texte

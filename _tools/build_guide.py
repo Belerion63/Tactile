@@ -40,7 +40,7 @@ import guide_wood
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_URL = "https://belerion63.github.io/Tactile"
 
-DISCORD = "https://discord.gg/WPdhCW4JdU"
+DISCORD = "https://discord.com/invite/WPdhCW4JdU"
 CURSEFORGE = "https://www.curseforge.com/members/belerion/projects"
 KOFI = "https://ko-fi.com/belerion"
 GITHUB = "https://github.com/Belerion63/Tactile"

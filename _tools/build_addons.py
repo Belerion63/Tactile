@@ -23,7 +23,7 @@ os.makedirs(PREV, exist_ok=True)
 SVG  = "D:/Modding/Minecraft/Tactile/Documentation/Logos/svg"
 DEMO = os.environ.get("DEMO") == "1"
 
-DISCORD   = "https://discord.gg/WPdhCW4JdU"
+DISCORD   = "https://discord.com/invite/WPdhCW4JdU"
 CURSEFORGE= "https://www.curseforge.com/members/belerion/projects"
 KOFI      = "https://ko-fi.com/belerion"
 GITHUB    = "https://github.com/Belerion63/Tactile"
