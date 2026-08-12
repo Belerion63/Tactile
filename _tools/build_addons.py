@@ -110,6 +110,10 @@ a{color:inherit;text-decoration:none}
 .desc{margin:9px 0 0;font-size:14.5px;line-height:1.55;color:#3f3a31;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .meta{display:flex;flex-wrap:wrap;gap:6px;margin:11px 0 0}
 .meta span{font-size:12px;color:var(--ink2);border:1px solid var(--line);border-radius:2px;padding:2px 8px}
+/* CE QU'IL FAUT INSTALLER se distingue de ce que le pack CONTIENT : les deux sont dans la même rangée, mais l'un
+   décrit, l'autre conditionne. Une exigence en couleur d'accent, une absence d'exigence en vert discret. */
+.meta .need{color:var(--accent);border-color:var(--accent)}
+.meta .vanilla{color:#4f9e3a;border-color:#bcd6b0}
 .foot{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:14px}
 .dl{background:var(--ink);color:var(--paper);font-weight:700;font-size:14px;padding:9px 17px;border-radius:2px}
 .dl:hover{background:var(--accent)}
@@ -176,6 +180,7 @@ def build():
   <div class="bar">
     <input id="q" type="search" placeholder="Rechercher" data-ph-fr="Rechercher une création, un auteur…" data-ph-en="Search a creation, an author…">
     <select id="mod"><option value="" data-fr="Tous les modules" data-en="All modules">All modules</option>{opts}</select>
+    <select id="need" hidden><option value="" data-fr="Tous les mods requis" data-en="Any requirement">Any requirement</option><option value="-" data-fr="Sans mod requis" data-en="No mod needed">No mod needed</option></select>
     <select id="sort"><option value="date" data-fr="Plus récentes" data-en="Most recent">Most recent</option><option value="dl" data-fr="Plus téléchargées" data-en="Most downloaded">Most downloaded</option><option value="name" data-fr="Alphabétique" data-en="Alphabetical">Alphabetical</option></select>
     <span class="count" id="count"></span>
   </div>
@@ -205,6 +210,16 @@ SCRIPT = """<script>
   var ENT={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return ENT[c];}); }
 
+  // ---- le nom d'un mod requis
+  //
+  // AUCUNE LISTE N'EST TENUE ICI. Le nom lisible est écrit par le mod au moment de l'export, parce que c'est le jeu
+  // — et lui seul — qui connaît la liste des mods chargés et sait comment chacun s'appelle. Une table écrite dans
+  // cette page serait à mettre à jour à chaque mod qui sort, et se tromperait sur tous ceux qu'on n'a pas prévus.
+  //
+  // Un paquet exporté avant que le mod écrive ces noms n'en porte pas : on retombe alors sur l'identifiant, qui est
+  // exactement ce qu'un joueur tape dans la recherche de CurseForge. Dégradé, jamais cassé.
+  function modLabel(id,names){ return (names && names[id]) || id; }
+
   // ---- langue, partagée avec le reste du site
   var cur='en';
   function set(l){
@@ -221,6 +236,7 @@ SCRIPT = """<script>
 
   var grid=document.getElementById('grid'), q=document.getElementById('q'),
       mod=document.getElementById('mod'), sort=document.getElementById('sort'),
+      need=document.getElementById('need'),
       count=document.getElementById('count'), empty=document.getElementById('empty');
   var all=[];
   empty.style.display='none';
@@ -236,7 +252,11 @@ SCRIPT = """<script>
     if(a.species) bits.push('<span>'+(+a.species)+' <span data-fr="espèces" data-en="species">species</span></span>');
     if(a.models)  bits.push('<span>'+(+a.models)+' <span data-fr="modèles" data-en="models">models</span></span>');
     if(a.leaves)  bits.push('<span>'+(+a.leaves)+' <span data-fr="feuillages" data-en="foliages">foliages</span></span>');
-    (a.requires||[]).forEach(function(r){ bits.push('<span>+ '+esc(r)+'</span>'); });
+    // CE QU'IL FAUT AVOIR POUR QUE ÇA SERVE. Un pack d'arbres Biomes O' Plenty ne montre rien chez qui ne l'a pas :
+    // c'est le renseignement le plus utile de la carte, et le seul qui décide d'un téléchargement.
+    var req=a.requires||[];
+    if(req.length) req.forEach(function(r){ bits.push('<span class="need">+ '+esc(modLabel(r,a.requires_names))+'</span>'); });
+    else bits.push('<span class="vanilla" data-fr="Aucun mod requis" data-en="No mod needed">No mod needed</span>');
 
     var el=document.createElement('article');
     el.className='card';
@@ -246,6 +266,8 @@ SCRIPT = """<script>
     el.dataset.search=[a.name,a.author,a.description].join(' ').toLowerCase();
     el.dataset.date=a.updated||'';
     el.dataset.dl=+a.downloads||0;
+    // Entouré d'espaces aux deux bouts : sans quoi chercher « byg » trouverait aussi « bygone ».
+    el.dataset.needs=req.length?' '+req.join(' ')+' ':'';
     el.innerHTML='<div class="shot">'+shots+'<span class="mod">'+esc(m.name)+'</span>'+nav+'<div class="dots">'+dots+'</div></div>'
       +'<div class="body"><h2>'+esc(a.name)+'</h2>'
       +'<p class="by"><span data-fr="par" data-en="by">by</span> '+esc(a.author)+'</p>'
@@ -288,9 +310,12 @@ SCRIPT = """<script>
   if(params.get('module')) mod.value=params.get('module');
 
   function apply(){
-    var t=(q.value||'').toLowerCase().trim(), m=mod.value, shown=0;
+    var t=(q.value||'').toLowerCase().trim(), m=mod.value, n=need.value, shown=0;
     all.forEach(function(c){
-      var ok=(!m||c.dataset.module===m)&&(!t||c.dataset.search.indexOf(t)>=0);
+      // « - » = ne demande rien d'autre que Minecraft. C'est le tri le plus utile de la page : il répond à
+      // « qu'est-ce que je peux poser tout de suite », qui est la question qu'on se pose avant toutes les autres.
+      var okNeed=!n||(n==='-'?!c.dataset.needs:c.dataset.needs.indexOf(' '+n+' ')>=0);
+      var ok=(!m||c.dataset.module===m)&&(!t||c.dataset.search.indexOf(t)>=0)&&okNeed;
       c.style.display=ok?'':'none'; if(ok)shown++;
     });
     var arr=all.slice().sort(function(a,b){
@@ -317,9 +342,29 @@ SCRIPT = """<script>
     if(!list||!list.length){ nothing(); return; }
     all=list.map(card);
     all.forEach(function(c){ grid.appendChild(c); slides(c.querySelector('.shot')); });
+
+    // LA LISTE DES MODS SE DÉDUIT DE CE QUI EST PUBLIÉ, jamais d'une liste écrite ici : une liste tenue à la main
+    // proposerait de filtrer sur des mods dont aucun pack n'existe, et manquerait le premier qui arrive.
+    var seen={}, NAMES={};
+    list.forEach(function(a){
+      (a.requires||[]).forEach(function(r){ seen[r]=1; });
+      // Les noms sont mis en commun : deux paquets qui citent le meme mod le nomment pareil, et un paquet
+      // ancien qui n'en porte pas profite du nom apporte par un paquet recent.
+      var n=a.requires_names||{}; for(var k in n){ if(n[k]) NAMES[k]=n[k]; }
+    });
+    var ids=Object.keys(seen).sort(function(a,b){ return modLabel(a,NAMES).localeCompare(modLabel(b,NAMES)); });
+    // Tant qu'aucune création ne demande quoi que ce soit, le menu n'apprendrait rien : il reste caché.
+    if(ids.length){
+      ids.forEach(function(r){
+        var o=document.createElement('option'); o.value=r; o.textContent=modLabel(r,NAMES); need.appendChild(o);
+      });
+      need.hidden=false;
+      var pn=params.get('needs'); if(pn) need.value=pn;
+    }
+
     // LES CARTES VIENNENT D'APPARAÎTRE : elles n'existaient pas quand la langue a été posée.
     set(cur);
-    [q,mod,sort].forEach(function(e){e.addEventListener('input',apply);});
+    [q,mod,sort,need].forEach(function(e){e.addEventListener('input',apply);});
     apply();
   }).catch(function(){
     // ON NE DIT PAS « RIEN ENCORE » QUAND ON NE SAIT PAS. Une panne affichée comme une galerie vide ferait croire
