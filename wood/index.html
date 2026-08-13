@@ -49,14 +49,21 @@ a{color:inherit;text-decoration:none}.wrap{max-width:1240px;margin:0 auto;paddin
 @media(max-width:760px){.spec{grid-template-columns:1fr 1fr}.si{border-bottom:1px solid var(--line)}}
 /* LA BANNIÈRE DE PERFORMANCE — le réglage de détail en un seul bloc pleine largeur. Un seul cran est visible à la
    fois, si bien que tous les chiffres tiennent sans jamais former un mur de statistiques. */
-.tban{position:relative;min-height:450px;display:flex;align-items:flex-end;overflow:hidden;background:#241f19;margin-top:54px}
+/* CONTENUE À LA LARGEUR DE LA PAGE, pas pleine largeur. Sur un écran très large, une bande d'un bord à l'autre se
+   détachait du reste — dont tout le contenu tient dans 1240 px — et étirait l'image jusqu'à la vider de son sujet.
+   Même gabarit que les visuels des rangées, coins et ombre compris. */
+.tban{position:relative;min-height:430px;display:flex;align-items:flex-end;overflow:hidden;background:#241f19;
+	max-width:1240px;margin:54px auto 0;border-radius:8px;
+	box-shadow:0 20px 44px rgba(25,18,10,.20);border:1px solid rgba(25,18,10,.10)}
 /* Ancré en BAS : la bannière est plus large que haute, l'image y est donc rognée verticalement. Ce qu'on veut voir
    est le pied des arbres et le sous-bois, pas le ciel — qui ne dit rien du feuillage et ne coûte que de la place. */
 .tshot{position:absolute;inset:0;background-size:cover;background-position:center bottom;opacity:0;transition:opacity .25s}
 .tshot.on{opacity:1}
 .tph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.42);font-size:12.5px;letter-spacing:.09em;text-transform:uppercase}
-.tscrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(9,6,2,.9),rgba(9,6,2,.58) 54%,rgba(9,6,2,.24)),linear-gradient(0deg,rgba(9,6,2,.78),transparent 54%)}
-.tin{position:relative;max-width:1240px;width:100%;margin:0 auto;padding:46px 32px 40px;color:#fff}
+/* Deux voiles superposés se multiplient : à .9 et .78 ils noircissaient jusqu'au sujet de l'image. Le voile ne doit
+   assombrir que ce qui porte du texte — la colonne de gauche et le bas — et lâcher prise partout ailleurs. */
+.tscrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(9,6,2,.84),rgba(9,6,2,.34) 44%,rgba(9,6,2,0) 76%),linear-gradient(0deg,rgba(9,6,2,.6),transparent 42%)}
+.tin{position:relative;width:100%;padding:44px 36px 34px;color:#fff}
 .teyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:rgba(255,255,255,.7);margin:0 0 14px}
 /* UNE SEULE COLONNE, à gauche. Le gabarit à deux colonnes attendait trois cases de chiffres ; avec une seule il
    laissait un vide qui déséquilibrait le bloc. Empilé, le regard descend du grand chiffre à ses précisions, et la
